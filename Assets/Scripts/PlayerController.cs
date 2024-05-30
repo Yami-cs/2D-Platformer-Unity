@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public Animator playeranim;
 
     public Controls controlmode;
+    public Joystick joystick;
    
 
     private float moveX;
@@ -43,7 +44,7 @@ public class PlayerController : MonoBehaviour
         {
             canDoubleJump = true; // Reset double jump when grounded
 
-            if (controlmode == Controls.pc)
+            if (controlmode == Controls.pc || joystick.Horizontal != 0)
             {
                 moveX = Input.GetAxis("Horizontal");
             }
@@ -108,9 +109,9 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         // Player movement
-        if (controlmode == Controls.pc)
+        if (controlmode == Controls.pc || joystick.Horizontal != 0)
         {
-            moveX = Input.GetAxis("Horizontal");
+            moveX = Input.GetAxis("Horizontal") + joystick.Horizontal;
         }
        
 
@@ -118,7 +119,7 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector2(moveX * moveSpeed, rb.velocity.y);
     }
 
-    private void Jump(float jumpForce)
+    public void Jump(float jumpForce)
     {
         rb.velocity = new Vector2(rb.velocity.x, 0); // Zero out vertical velocity
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
@@ -131,34 +132,5 @@ public class PlayerController : MonoBehaviour
         Vector2 rayOrigin = new Vector2(groundCheck.transform.position.x, groundCheck.transform.position.y - 0.1f);
         RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, rayLength, groundLayer);
         return hit.collider != null;
-    }
-
-
-    //mobile;
-    public void MobileMove(float value)
-    {
-        moveX = value;
-    }
-    public void MobileJump()
-    {
-        isGroundedBool = IsGrounded();
-        if (isGroundedBool)
-        {
-            canDoubleJump = true; // Reset double jump when grounded
-
-             Jump(jumpForce);
-            
-        }
-        /*
-        else
-        {
-            if (canDoubleJump)
-            {
-                Jump(doubleJumpForce);
-                canDoubleJump = false; // Disable double jump until grounded again
-            }
-        }
-        */
-
     }
 }
